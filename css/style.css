@@ -1,0 +1,41 @@
+/* Styles du jeu caché */
+#game-container {
+    position: fixed;
+    top: 0;
+    opacity:1;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(70, 3, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
+}
+
+#game-container {
+    opacity:1;
+}
+
+#gameCanvas {
+    background: white;
+    border: 2px solid #f39c12;
+    width: 500px;
+    height: 300px;
+}
+
+#closeGame {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Cache le jeu par défaut */
+.hidden {
+    display: none;
+}
