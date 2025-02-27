@@ -23,22 +23,22 @@ let secretCode = "";
 
 // Gestion du saut
 document.addEventListener("keydown", (e) => {
-    if (e.code === "Space" && gameRunning) {
+if (e.code === "Space" && gameRunning) {
         player.dy = -7; // Saut
-    }
+}
 });
 
 // Ouvrir le jeu en appuyant sur un code secret (ex: "play")
 
 document.addEventListener("keydown", (e) => {
-    if (e.code === "Space" && gameRunning) {
-        player.dy = -7; // Saut
-    }
+if (e.code === "Space" && gameRunning) {
+player.dy = -7; // Saut
+}
 
-    // Ajout des touches pour le code secret
-    secretCode += e.key.toLowerCase();
-    if (secretCode.endsWith("play")) { // Vérifie si le code est bien entré dans l'ordre
-        startGame();
-        secretCode = ""; // Réinitialiser après lancement
-    }
+// Ajout des touches pour le code secret
+//     secretCode += e.key.toLowerCase();
+if (secretCode.endsWith("play")) { // Vérifie si le code est bien entré dans l'ordre
+startGame();
+secretCode = ""; // Réinitialiser après lancement
+}
 });
