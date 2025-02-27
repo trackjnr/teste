@@ -1,39 +1,78 @@
-import { gameRunning, player, obstacles, score, gameContainer } from "../main.js";
-import { updateGame } from "./update-game.js";
+// ✅ Importation des fonctions nécessaires
+import { logEvent } from "../utils/utils.js";  // Importation de logEvent
 
+import { updateGame } from "./update-game.js"; 
 
+// ✅ Sélection des éléments HTML avec vérification
+export const gameContainer = document.getElementById("game-container");
+export const canvas = document.getElementById("gameCanvas");
 
-/*----------------------------------------------------------------------------------------------------
-// Fonction pour démarrer le jeu
-/*----------------------------------------------------------------------------------------------------
-*
- * startGame.js
- *
- * Initialise et démarre le jeu en réinitialisant les variables et en lançant la boucle de mise à jour.
- * 
- * @param {HTMLElement} gameContainer - Conteneur du jeu
- * @param {Object} player - Objet représentant le joueur
- * @param {Array} obstacles - Tableau des obstacles
- * @param {number} score - Score du joueur
- * @param {boolean} gameRunning - Indicateur d'état du jeu
- * @param {Function} updateGame - Fonction de mise à jour du jeu
- *----------------------------------------------------------------------------------------------------------
- * @function startGame
- * @returns {void}
-/**
- * Démarre le jeu en réinitialisant les variables et en lançant la boucle de mise à jour.
- * 
- * @function startGame
- * @returns {void}
- */
-export function startGame() {
-    if (getGameState()) return; // Vérifie si le jeu est déjà en cours
-    setGameState(true); // Démarre le jeu
-
-    resetPlayer(); // Réinitialise le joueur
-    resetObstacles(); // Vide les obstacles
-    resetScore(); // Remet le score à 0
-
-    gameContainer.classList.remove("hidden"); // Affiche le jeu
-    updateGame(); // Démarre la mise à jour du jeu
+if (!canvas) {
+    logEvent("error", "L'élément #gameCanvas est introuvable !");
+} else {
+const ctx = canvas.getContext("2d");
+    logEvent("success", "Canvas détecté et contexte 2D récupéré.");
 }
+
+/*------------------------------------------------------------------
+--                  Variables du jeu
+------------------------------------------------------------------*/
+let gameRunning = false;
+let player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
+let gravity = 0.5;
+let obstacles = [];
+let score = 0;
+let secretCode = "";
+
+/*------------------------------------------------------------------
+--                  Gestion des événements clavier
+------------------------------------------------------------------*/
+
+// ✅ Gestion des erreurs lors de l'écoute des touches
+try {
+    document.addEventListener("keydown", (e) => {
+        logEvent("info", `Touche pressée: ${e.code}`);
+
+        if (e.code === "Space" && gameRunning) {
+            player.dy = -7; // Saut
+            logEvent("success", "Le joueur saute !");
+        }
+
+        // Ajout des touches au code secret
+        secretCode += e.key.toLowerCase();
+        logEvent("info", `Code secret en cours : ${secretCode}`);
+
+        if (secretCode.endsWith("play")) {
+            logEvent("success", "🎮 Code secret activé, lancement du jeu !");
+            startGame();
+            secretCode = ""; // Réinitialisation
+        }
+    });
+
+    logEvent("success", "Gestionnaire d'événements clavier initialisé.");
+} catch (error) {
+    logEvent("error", "Erreur lors de l'ajout de l'event listener clavier.", { error });
+}
+
+/*------------------------------------------------------------------
+--                  Vérification des fonctions importées
+------------------------------------------------------------------*/
+try {
+    if (typeof startGame !== "function") {
+        throw new Error("La fonction startGame() est introuvable !");
+    }
+    logEvent("success", "La fonction startGame() est bien importée.");
+} catch (error) {
+    logEvent("error", error.message);
+}
+
+try {
+    if (typeof updateGame !== "function") {
+        throw new Error("La fonction updateGame() est introuvable !");
+    }
+    logEvent("success", "La fonction updateGame() est bien importée.");
+} catch (error) {
+    logEvent("error", error.message);
+}
+
+logEvent("success", "✅ Script chargé avec succès !");

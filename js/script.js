@@ -1,6 +1,6 @@
 // Exportation des variables globales du jeu
-import { startGame } from "./functions/start-game";
-import { gameRunning } from(startGame)
+import { startGame } from "./functions/start-game.js";
+import { logEvent } from "./utils/utils.js";
 
 
 // Sélection des éléments HTML
@@ -14,31 +14,28 @@ console.log(updateGame(10, 4)); // 6
 /*------------------------------------------------------------------
 --                  Variables du jeu
 --------------------------------------------------------------------------*/
-let gameRunning = false;
-let player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
-let gravity = 0.5;
-let obstacles = [];
-let score = 0;
-let secretCode = "";
+export let gameRunning = false;
+export let player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
+export let gravity = 0.5;
+export let obstacles = [];
+export let score = 0;
+export let secretCode = "";
 
-// Gestion du saut
 document.addEventListener("keydown", (e) => {
-if (e.code === "Space" && gameRunning) {
+    logEvent("info", `Touche pressée: ${e.code}`);
+
+    if (e.code === "Space" && gameRunning) {
         player.dy = -7; // Saut
-}
-});
+        logEvent("success", "Le joueur saute !");
+    }
 
-// Ouvrir le jeu en appuyant sur un code secret (ex: "play")
+    // Ajout des touches au code secret
+    secretCode += e.key.toLowerCase();
+    logEvent("info", `Code secret en cours : ${secretCode}`);
 
-document.addEventListener("keydown", (e) => {
-if (e.code === "Space" && gameRunning) {
-player.dy = -7; // Saut
-}
-
-// Ajout des touches pour le code secret
-//     secretCode += e.key.toLowerCase();
-if (secretCode.endsWith("play")) { // Vérifie si le code est bien entré dans l'ordre
-startGame();
-secretCode = ""; // Réinitialiser après lancement
-}
+    if (secretCode.endsWith("play")) {
+        logEvent("success", "🎮 Code secret activé, lancement du jeu !");
+        startGame();
+        secretCode = ""; // Réinitialisation
+    }
 });
