@@ -1,6 +1,6 @@
 /* ==================================================================================== */
 /*  FICHIER          : normalize.js                                                    */
-/*  AUTEUR           : Trackozor                                                       */
+/*  AUTEUR           : Trackjnr                                                       */
 /*  VERSION          : 1.1                                                              */
 /*  DATE DE CRÉATION : 09/02/2025                                                       */
 /*  DERNIÈRE MODIF.  : 12/02/2025                                                       */

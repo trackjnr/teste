@@ -1,7 +1,7 @@
 /**--------------------------------------------------------------------------
  * @file script.js
  * @description Gestion principale du jeu (initialisation, événements, logs)
- * @author Trackozor
+ * @author Trackjnr
  * @version 1.0
 *-------------------------------------------------------------------------------*/
 

@@ -2,7 +2,7 @@
  * =============================================================================
  * Projet      : Fisheye
  * Fichier     : accessibility.js
- * Auteur      : Trackozor
+ * Auteur      : Trackjnr
  * Date        : 01/01/2025
  * Version     : 2.1.0
  * Description : Ce fichier contient les fonctionnalités d'accessibilité (a11y)

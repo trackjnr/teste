@@ -7,7 +7,7 @@
  *                  en optimisant les performances via un système de cache 
  *                  intelligent.
  *
- * Auteur          : Trackozor
+ * Auteur          : Trackjnr
  * Date de création: 05/01/2025
  * Dernière MAJ    : 09/02/2025 (Version 2.0.0)
  * ===============================================================

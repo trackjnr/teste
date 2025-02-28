@@ -1,7 +1,7 @@
 /* =============================================================================
     Projet      : Fisheye
     Fichier     : constants.js
-    Auteur      : trackozor
+    Auteur      : Trackjnr
     Date        : 01/01/2025
     Version     : 2.1
     Description : Fichier centralisant les constantes globales du projet.

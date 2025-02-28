@@ -1,7 +1,7 @@
 /* =============================================================================
 /* PROJET      : Les Petits Plats
 /* FICHIER     : utils.js
-/* AUTEUR      : Trackozor
+/* AUTEUR      : Trackjnr
 /* DATE        : 21/01/2025
 /* VERSION     : 1.2.0
 /* DESCRIPTION : Fonctions utilitaires globales du projet.
