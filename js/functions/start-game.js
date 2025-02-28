@@ -1,78 +1,134 @@
+/**--------------------------------------------------------------------------
+ * @file script.js
+ * @description Gestion principale du jeu (initialisation, événements, logs)
+ * @author Trackozor
+ * @version 1.0
+*-------------------------------------------------------------------------------*/
+
 // ✅ Importation des fonctions nécessaires
-import { logEvent } from "../utils/utils.js";  // Importation de logEvent
+import { logEvent } from "../utils/utils.js";  
 
-import { updateGame } from "./update-game.js"; 
 
-// ✅ Sélection des éléments HTML avec vérification
+/**************************************************************************
+ *                      VARIABLES GLOBALES DU JEU
+ **************************************************************************/
+
 export const gameContainer = document.getElementById("game-container");
 export const canvas = document.getElementById("gameCanvas");
+export let ctx = canvas ? canvas.getContext("2d") : null;
 
-if (!canvas) {
-    logEvent("error", "L'élément #gameCanvas est introuvable !");
-} else {
-const ctx = canvas.getContext("2d");
-    logEvent("success", "Canvas détecté et contexte 2D récupéré.");
-}
+export let gameRunning = false;
+export let player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
+export let gravity = 0.5;
+export let obstacles = [];
+export let score = 0;
+export let secretCode = "";
 
-/*------------------------------------------------------------------
---                  Variables du jeu
-------------------------------------------------------------------*/
-let gameRunning = false;
-let player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
-let gravity = 0.5;
-let obstacles = [];
-let score = 0;
-let secretCode = "";
+/**************************************************************************
+ *                          INITIALISATION DU JEU
+ **************************************************************************/
 
-/*------------------------------------------------------------------
---                  Gestion des événements clavier
-------------------------------------------------------------------*/
-
-// ✅ Gestion des erreurs lors de l'écoute des touches
-try {
-    document.addEventListener("keydown", (e) => {
-        logEvent("info", `Touche pressée: ${e.code}`);
-
-        if (e.code === "Space" && gameRunning) {
-            player.dy = -7; // Saut
-            logEvent("success", "Le joueur saute !");
-        }
-
-        // Ajout des touches au code secret
-        secretCode += e.key.toLowerCase();
-        logEvent("info", `Code secret en cours : ${secretCode}`);
-
-        if (secretCode.endsWith("play")) {
-            logEvent("success", "🎮 Code secret activé, lancement du jeu !");
-            startGame();
-            secretCode = ""; // Réinitialisation
-        }
-    });
-
-    logEvent("success", "Gestionnaire d'événements clavier initialisé.");
-} catch (error) {
-    logEvent("error", "Erreur lors de l'ajout de l'event listener clavier.", { error });
-}
-
-/*------------------------------------------------------------------
---                  Vérification des fonctions importées
-------------------------------------------------------------------*/
-try {
-    if (typeof startGame !== "function") {
-        throw new Error("La fonction startGame() est introuvable !");
+/**
+ * @function startGame
+ * @description Initialise le jeu et démarre la boucle de mise à jour.
+ */
+export function startGame() {
+    try {
+        logEvent("success", "🎮 Démarrage du jeu !");
+        gameRunning = true;
+        resetGameData();
+        initKeyboardEvents();
+        checkGameDependencies();
+        requestAnimationFrame(updateGame);
+    } catch (error) {
+        logEvent("error", `Erreur au démarrage du jeu: ${error.message}`);
     }
-    logEvent("success", "La fonction startGame() est bien importée.");
-} catch (error) {
-    logEvent("error", error.message);
 }
 
-try {
-    if (typeof updateGame !== "function") {
-        throw new Error("La fonction updateGame() est introuvable !");
-    }
-    logEvent("success", "La fonction updateGame() est bien importée.");
-} catch (error) {
-    logEvent("error", error.message);
+/**************************************************************************
+ *                          RÉINITIALISATION DU JEU
+ **************************************************************************/
+
+/**
+ * @function resetGameData
+ * @description Réinitialise les variables du jeu.
+ */
+function resetGameData() {
+    logEvent("info", "🔄 Réinitialisation du jeu...");
+    score = 0;
+    obstacles = [];
+    player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
 }
+
+/**************************************************************************
+ *                     GESTION DES ÉVÉNEMENTS CLAVIER
+ **************************************************************************/
+
+/**
+ * @function initKeyboardEvents
+ * @description Initialise les écouteurs d'événements clavier.
+ */
+function initKeyboardEvents() {
+    try {
+        document.addEventListener("keydown", handleKeyDown);
+        logEvent("success", "🎹 Gestionnaire d'événements clavier ajouté.");
+    } catch (error) {
+        logEvent("error", "Erreur lors de l'ajout des événements clavier.", { error });
+    }
+}
+
+/**
+ * @function handleKeyDown
+ * @description Gère les entrées clavier du joueur.
+ * @param {KeyboardEvent} e - Événement de touche enfoncée.
+ */
+function handleKeyDown(e) {
+    logEvent("info", `Touche pressée: ${e.code}`);
+
+    if (e.code === "Space" && gameRunning) {
+        player.dy = -7; // Saut du joueur
+        logEvent("success", "🕹️ Le joueur saute !");
+    }
+
+    // Ajout du code secret pour débloquer le jeu
+    secretCode += e.key.toLowerCase();
+    logEvent("info", `Code secret en cours : ${secretCode}`);
+
+    if (secretCode.endsWith("play")) {
+        logEvent("success", "🎮 Code secret activé, relance du jeu !");
+        startGame();
+        secretCode = ""; // Réinitialisation
+    }
+}
+
+/**************************************************************************
+ *                   VÉRIFICATION DES DÉPENDANCES
+ **************************************************************************/
+
+/**
+ * @function checkGameDependencies
+ * @description Vérifie la présence des éléments et des fonctions nécessaires au jeu.
+ */
+function checkGameDependencies() {
+    try {
+        if (!canvas || !ctx) {
+            throw new Error("Le canvas ou son contexte est introuvable.");
+        }
+        logEvent("success", "✅ Canvas et contexte détectés.");
+
+        if (typeof updateGame !== "function") {
+            throw new Error("La fonction updateGame() est introuvable !");
+        }
+        logEvent("success", "✅ La fonction updateGame() est bien importée.");
+
+    } catch (error) {
+        logEvent("error", `Vérification échouée: ${error.message}`);
+    }
+}
+
+/* ------------------------------------------------------------------------ */
+/*                      DÉMARRAGE AUTOMATIQUE DU JEU                        */
+/* --------------------------------------------------------------------------*/
 
 logEvent("success", "✅ Script chargé avec succès !");
+startGame();

@@ -1,81 +1,134 @@
-// ✅ Importation des fonctions et outils nécessaires
-import { logEvent } from "../utils/utils.js";  
-import { gameRunning, player, gravity, obstacles, score, gameContainer, ctx, canvas } from "../script.js";
+/**************************************************************************
+ * @file script.js
+ * @description Gestion principale du jeu (initialisation, événements, logs)
+ * @author Trackozor
+ * @version 1.0
+ **************************************************************************/
 
-// ✅ Fonction pour mettre à jour le jeu
-export function updateGame() {
-    if (!gameRunning) {
-        logEvent("warn", "Le jeu est arrêté, updateGame() ne s'exécute pas.");
-        return; // Arrête le jeu si gameRunning est false
+// ✅ Importation des fonctions nécessaires
+import { logEvent } from "../utils/utils.js";
+
+
+/**************************************************************************
+ *                      VARIABLES GLOBALES DU JEU
+ **************************************************************************/
+
+export const gameContainer = document.getElementById("game-container");
+export const canvas = document.getElementById("gameCanvas");
+export let ctx = canvas ? canvas.getContext("2d") : null;
+
+export let gameRunning = false;
+export let player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
+export let gravity = 0.5;
+export let obstacles = [];
+export let score = 0;
+export let secretCode = "";
+
+/**************************************************************************
+ *                          INITIALISATION DU JEU
+ **************************************************************************/
+
+/**
+ * @function startGame
+ * @description Initialise le jeu et démarre la boucle de mise à jour.
+ */
+export function startGame() {
+    try {
+        logEvent("success", "🎮 Démarrage du jeu !");
+        gameRunning = true;
+        resetGameData();
+        initKeyboardEvents();
+        checkGameDependencies();
+        requestAnimationFrame(updateGame);
+    } catch (error) {
+        logEvent("error", `Erreur au démarrage du jeu: ${error.message}`);
+    }
+}
+
+/**************************************************************************
+ *                          RÉINITIALISATION DU JEU
+ **************************************************************************/
+
+/**
+ * @function resetGameData
+ * @description Réinitialise les variables du jeu.
+ */
+function resetGameData() {
+    logEvent("info", "🔄 Réinitialisation du jeu...");
+    score = 0;
+    obstacles = [];
+    player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
+}
+
+/**************************************************************************
+ *                     GESTION DES ÉVÉNEMENTS CLAVIER
+ **************************************************************************/
+
+/**
+ * @function initKeyboardEvents
+ * @description Initialise les écouteurs d'événements clavier.
+ */
+function initKeyboardEvents() {
+    try {
+        document.addEventListener("keydown", handleKeyDown);
+        logEvent("success", "🎹 Gestionnaire d'événements clavier ajouté.");
+    } catch (error) {
+        logEvent("error", "Erreur lors de l'ajout des événements clavier.", { error });
+    }
+}
+
+/**
+ * @function handleKeyDown
+ * @description Gère les entrées clavier du joueur.
+ * @param {KeyboardEvent} e - Événement de touche enfoncée.
+ */
+function handleKeyDown(e) {
+    logEvent("info", `Touche pressée: ${e.code}`);
+
+    if (e.code === "Space" && gameRunning) {
+        player.dy = -7; // Saut du joueur
+        logEvent("success", "🕹️ Le joueur saute !");
     }
 
-    if (!ctx || !canvas) {
-        logEvent("error", "Canvas ou contexte 2D introuvable !");
-        return;
+    // Ajout du code secret pour débloquer le jeu
+    secretCode += e.key.toLowerCase();
+    logEvent("info", `Code secret en cours : ${secretCode}`);
+
+    if (secretCode.endsWith("play")) {
+        logEvent("success", "🎮 Code secret activé, relance du jeu !");
+        startGame();
+        secretCode = ""; // Réinitialisation
     }
+}
 
-    logEvent("info", "Mise à jour du jeu en cours...");
+/**************************************************************************
+ *                   VÉRIFICATION DES DÉPENDANCES
+ **************************************************************************/
 
-    // Efface le canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Appliquer la gravité au joueur
-    player.dy += gravity;
-    player.y += player.dy;
-
-    // Empêcher le joueur de sortir du cadre
-    if (player.y + player.height > canvas.height) {
-        player.y = canvas.height - player.height;
-        player.dy = 0;
-    }
-
-    // Dessiner le joueur
-    ctx.fillStyle = "blue";
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-
-    // Générer des obstacles aléatoirement avec une probabilité de 2% par frame
-    if (Math.random() < 0.02) {
-        const obstacle = { x: canvas.width, y: canvas.height - 20, width: 20, height: 20 };
-        obstacles.push(obstacle);
-        logEvent("info", "Nouvel obstacle généré.", obstacle);
-    }
-
-    // Déplacer et dessiner les obstacles
-    ctx.fillStyle = "red";
-    for (let i = 0; i < obstacles.length; i++) {
-        obstacles[i].x -= 3;
-        ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
-
-        // Vérification de la collision entre le joueur et un obstacle
-        if (
-            player.x < obstacles[i].x + obstacles[i].width &&
-            player.x + player.width > obstacles[i].x &&
-            player.y < obstacles[i].y + obstacles[i].height &&
-            player.y + player.height > obstacles[i].y
-        ) {
-            gameRunning = false;
-            logEvent("error", `💥 GAME OVER ! Score final: ${score}`);
-            alert(`💥 GAME OVER ! Score : ${score}`);
-            gameContainer.classList.add("hidden");
-            return;
+/**
+ * @function checkGameDependencies
+ * @description Vérifie la présence des éléments et des fonctions nécessaires au jeu.
+ */
+function checkGameDependencies() {
+    try {
+        if (!canvas || !ctx) {
+            throw new Error("Le canvas ou son contexte est introuvable.");
         }
+        logEvent("success", "✅ Canvas et contexte détectés.");
+
+        if (typeof updateGame !== "function") {
+            throw new Error("La fonction updateGame() est introuvable !");
+        }
+        logEvent("success", "✅ La fonction updateGame() est bien importée.");
+
+    } catch (error) {
+        logEvent("error", `Vérification échouée: ${error.message}`);
     }
-
-    // Affichage du score
-    ctx.fillStyle = "black";
-    ctx.font = "16px Arial";
-    ctx.fillText("Score: " + score, 10, 20);
-    score++;
-    logEvent("success", `Score actuel : ${score}`);
-
-    // Demande une nouvelle frame pour continuer le jeu
-    requestAnimationFrame(updateGame);
 }
 
-// ✅ Lancer la boucle du jeu si elle n'est pas déjà en cours
-if (gameRunning) {
-    logEvent("success", "Début de la boucle de mise à jour du jeu.");
-    requestAnimationFrame(updateGame);
-} else {
-    logEvent("warn", "Le jeu n'a pas démarré, attente d'activation.");
-}
+/**************************************************************************
+ *                      DÉMARRAGE AUTOMATIQUE DU JEU
+ **************************************************************************/
+
+logEvent("success", "✅ Script chargé avec succès !");
+startGame();
