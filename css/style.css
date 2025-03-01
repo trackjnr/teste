@@ -39,3 +39,20 @@
 .hidden {
     display: none;
 }
+/**************************************************************************
+ * ✅ LOGO COCOBA - HAUT À GAUCHE (50% DE LARGEUR)
+ **************************************************************************/
+
+ .logo-container {
+    position: relative; /* Position relative pour qu'il reste dans le flux */
+    width: 50%; /* Le logo prend 50% de la largeur */
+    max-width: 300px; /* Empêche qu'il devienne trop grand */
+    margin-left: 0; /* Aligné à gauche */
+    padding: 10px; /* Espacement pour éviter qu'il colle au bord */
+}
+
+.logo {
+    width: 100%; /* Prend toute la largeur du conteneur */
+    height: auto; /* Garde les proportions */
+    display: block;
+}
