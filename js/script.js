@@ -138,3 +138,4 @@ function checkGameDependencies() {
 
 logEvent("success", "✅ Script chargé avec succès !");
 initGame();
+

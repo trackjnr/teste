@@ -1,134 +1,131 @@
 /**************************************************************************
- * @file script.js
- * @description Gestion principale du jeu (initialisation, événements, logs)
- * @author Trackjnr
+ * @file update-game.js
+ * @description Gère la mise à jour et le rendu du jeu
+ * @author TrackJnr
  * @version 1.0
  **************************************************************************/
 
-// ✅ Importation des fonctions nécessaires
+import { canvas, ctx, player, gameRunning, gravity, obstacles, score } from "./start-game.js";
 import { logEvent } from "../utils/utils.js";
 
-
 /**************************************************************************
- *                      VARIABLES GLOBALES DU JEU
- **************************************************************************/
-
-export const gameContainer = document.getElementById("game-container");
-export const canvas = document.getElementById("gameCanvas");
-export let ctx = canvas ? canvas.getContext("2d") : null;
-
-export let gameRunning = false;
-export let player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
-export let gravity = 0.5;
-export let obstacles = [];
-export let score = 0;
-export let secretCode = "";
-
-/**************************************************************************
- *                          INITIALISATION DU JEU
+ *                          MISE À JOUR DU JEU
  **************************************************************************/
 
 /**
- * @function startGame
- * @description Initialise le jeu et démarre la boucle de mise à jour.
+ * @function updateGame
+ * @description Met à jour l'état du jeu à chaque frame.
  */
-export function startGame() {
-    try {
-        logEvent("success", "🎮 Démarrage du jeu !");
-        gameRunning = true;
-        resetGameData();
-        initKeyboardEvents();
-        checkGameDependencies();
-        requestAnimationFrame(updateGame);
-    } catch (error) {
-        logEvent("error", `Erreur au démarrage du jeu: ${error.message}`);
+export function updateGame() {
+    if (!gameRunning) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface l'écran
+
+    updatePlayer();
+    updateObstacles();
+    checkCollisions();
+
+    displayScore();
+
+    requestAnimationFrame(updateGame); // Boucle de mise à jour
+}
+
+/**************************************************************************
+ *                         GESTION DU JOUEUR
+ **************************************************************************/
+
+/**
+ * @function updatePlayer
+ * @description Met à jour la position du joueur.
+ */
+function updatePlayer() {
+    player.dy += gravity;
+    player.y += player.dy;
+
+    if (player.y + player.height > canvas.height) {
+        player.y = canvas.height - player.height;
+        player.dy = 0;
+    }
+
+    ctx.fillStyle = "blue";
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+}
+
+/**************************************************************************
+ *                         GESTION DES OBSTACLES
+ **************************************************************************/
+
+/**
+ * @function updateObstacles
+ * @description Gère les obstacles et leur déplacement.
+ */
+function updateObstacles() {
+    for (let i = 0; i < obstacles.length; i++) {
+        let obs = obstacles[i];
+        obs.x -= 5; // Défilement vers la gauche
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+    }
+
+    if (obstacles.length > 0 && obstacles[0].x < -50) {
+        obstacles.shift(); // Supprime les obstacles hors écran
+        score++; // Augmente le score
     }
 }
 
 /**************************************************************************
- *                          RÉINITIALISATION DU JEU
+ *                      DÉTECTION DES COLLISIONS
  **************************************************************************/
 
 /**
- * @function resetGameData
- * @description Réinitialise les variables du jeu.
+ * @function checkCollisions
+ * @description Vérifie les collisions entre le joueur et les obstacles.
  */
-function resetGameData() {
-    logEvent("info", "🔄 Réinitialisation du jeu...");
-    score = 0;
-    obstacles = [];
-    player = { x: 50, y: 200, width: 30, height: 30, dy: 0 };
-}
-
-/**************************************************************************
- *                     GESTION DES ÉVÉNEMENTS CLAVIER
- **************************************************************************/
-
-/**
- * @function initKeyboardEvents
- * @description Initialise les écouteurs d'événements clavier.
- */
-function initKeyboardEvents() {
-    try {
-        document.addEventListener("keydown", handleKeyDown);
-        logEvent("success", "🎹 Gestionnaire d'événements clavier ajouté.");
-    } catch (error) {
-        logEvent("error", "Erreur lors de l'ajout des événements clavier.", { error });
-    }
-}
-
-/**
- * @function handleKeyDown
- * @description Gère les entrées clavier du joueur.
- * @param {KeyboardEvent} e - Événement de touche enfoncée.
- */
-function handleKeyDown(e) {
-    logEvent("info", `Touche pressée: ${e.code}`);
-
-    if (e.code === "Space" && gameRunning) {
-        player.dy = -7; // Saut du joueur
-        logEvent("success", "🕹️ Le joueur saute !");
-    }
-
-    // Ajout du code secret pour débloquer le jeu
-    secretCode += e.key.toLowerCase();
-    logEvent("info", `Code secret en cours : ${secretCode}`);
-
-    if (secretCode.endsWith("play")) {
-        logEvent("success", "🎮 Code secret activé, relance du jeu !");
-        startGame();
-        secretCode = ""; // Réinitialisation
-    }
-}
-
-/**************************************************************************
- *                   VÉRIFICATION DES DÉPENDANCES
- **************************************************************************/
-
-/**
- * @function checkGameDependencies
- * @description Vérifie la présence des éléments et des fonctions nécessaires au jeu.
- */
-function checkGameDependencies() {
-    try {
-        if (!canvas || !ctx) {
-            throw new Error("Le canvas ou son contexte est introuvable.");
+function checkCollisions() {
+    for (let obs of obstacles) {
+        if (
+            player.x < obs.x + obs.width &&
+            player.x + player.width > obs.x &&
+            player.y < obs.y + obs.height &&
+            player.y + player.height > obs.y
+        ) {
+            logEvent("error", "💥 Collision détectée !");
+            endGame();
         }
-        logEvent("success", "✅ Canvas et contexte détectés.");
-
-        if (typeof updateGame !== "function") {
-            throw new Error("La fonction updateGame() est introuvable !");
-        }
-        logEvent("success", "✅ La fonction updateGame() est bien importée.");
-
-    } catch (error) {
-        logEvent("error", `Vérification échouée: ${error.message}`);
     }
 }
 
 /**************************************************************************
- *                      DÉMARRAGE AUTOMATIQUE DU JEU
+ *                      AFFICHAGE DU SCORE
  **************************************************************************/
 
-logEvent("success", "✅ Script chargé avec succès !");
-startGame();
+/**
+ * @function displayScore
+ * @description Affiche le score actuel.
+ */
+function displayScore() {
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Score: ${score}`, 10, 30);
+}
+
+/**************************************************************************
+ *                      GESTION DE FIN DE JEU
+ **************************************************************************/
+
+/**
+ * @function endGame
+ * @description Met fin au jeu et affiche un message.
+ */
+function endGame() {
+    logEvent("error", "🚨 Fin du jeu !");
+    gameRunning = false;
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.fillText("Game Over", canvas.width / 2 - 70, canvas.height / 2);
+}

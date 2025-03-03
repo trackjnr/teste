@@ -9,7 +9,7 @@
  * ✅ STYLES GÉNÉRAUX DE LA PAGE À PROPOS
  **************************************************************************/
 
- .about, .mission, .team {
+.about, .mission, .team {
     padding: 60px 20px;
     text-align: center;
     max-width: 1000px;
@@ -70,4 +70,49 @@
     .team-grid {
         grid-template-columns: 1fr;
     }
+}
+@media (max-width: 600px) {
+    .logo {
+        width: 70vw;  /* Augmente un peu la taille pour mobile */
+        max-width: 200px;  /* Réduit le max sur petits écrans */
+    }
+}
+
+/* ✅ Conteneur du logo : Assure un bon positionnement */
+.logo-container {
+    display: flex;  /* Utilisation de Flexbox pour un alignement optimal */
+    justify-content: center;  /* Centre le logo horizontalement */
+    align-items: center;  /* Centre le logo verticalement */
+    width: 100%;  /* Le conteneur prend toute la largeur disponible */
+}
+
+/* ✅ Style du logo */
+.logo {
+    width: 50vw;  /* Le logo occupe 50% de la largeur de la fenêtre (viewport) */
+    max-width: 300px;  /* Limite la taille du logo pour éviter qu'il devienne trop grand */
+    height: auto;  /* Garde les proportions originales de l'image */
+}
+
+/* ✅ Responsive : Ajuste le logo pour les petits écrans */
+@media (max-width: 600px) {
+    .logo {
+        width: 70vw;  /* Augmente la taille du logo pour qu'il reste visible sur mobile */
+        max-width: 200px;  /* Réduit la limite maximale pour ne pas dépasser l'écran */
+    }
+}
+/* ✅ Style pour les liens d'équipe */
+.team-link {
+    text-decoration: none;  /* Supprime le soulignement du lien pour un look propre */
+    color: inherit;  /* Garde la couleur du texte inchangée */
+}
+
+/* ✅ Style des articles d'équipe */
+.team-link article {
+    cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
+    transition: transform 0.2s ease-in-out; /* Animation fluide au survol */
+}
+
+/* ✅ Effet au survol */
+.team-link article:hover {
+    transform: scale(1.05);  /* Zoom léger pour améliorer l'interaction */
 }

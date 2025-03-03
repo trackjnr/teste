@@ -1,13 +1,13 @@
-/**--------------------------------------------------------------------------
- * @file script.js
- * @description Gestion principale du jeu (initialisation, événements, logs)
- * @author Trackjnr
+/**************************************************************************
+ * @file start-game.js
+ * @description Gestion de l'initialisation et des événements du jeu
+ * @author TrackJnr
  * @version 1.0
-*-------------------------------------------------------------------------------*/
+ **************************************************************************/
 
 // ✅ Importation des fonctions nécessaires
-import { logEvent } from "../utils/utils.js";  
-
+import { logEvent } from "../utils/utils.js";
+import { updateGame } from "./update-game.js";
 
 /**************************************************************************
  *                      VARIABLES GLOBALES DU JEU
@@ -34,12 +34,18 @@ export let secretCode = "";
  */
 export function startGame() {
     try {
+        // Vérifier si le canvas est bien chargé
+        if (!canvas || !ctx) {
+            throw new Error("Le canvas ou son contexte est introuvable.");
+        }
+
         logEvent("success", "🎮 Démarrage du jeu !");
         gameRunning = true;
         resetGameData();
         initKeyboardEvents();
         checkGameDependencies();
-        requestAnimationFrame(updateGame);
+        requestAnimationFrame(updateGame); // Lancer la boucle du jeu
+
     } catch (error) {
         logEvent("error", `Erreur au démarrage du jeu: ${error.message}`);
     }
@@ -120,15 +126,14 @@ function checkGameDependencies() {
             throw new Error("La fonction updateGame() est introuvable !");
         }
         logEvent("success", "✅ La fonction updateGame() est bien importée.");
-
     } catch (error) {
         logEvent("error", `Vérification échouée: ${error.message}`);
     }
 }
 
-/* ------------------------------------------------------------------------ */
-/*                      DÉMARRAGE AUTOMATIQUE DU JEU                        */
-/* --------------------------------------------------------------------------*/
+/**************************************************************************
+ *                      DÉMARRAGE AUTOMATIQUE DU JEU
+ **************************************************************************/
 
 logEvent("success", "✅ Script chargé avec succès !");
 startGame();

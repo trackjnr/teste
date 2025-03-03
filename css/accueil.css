@@ -12,7 +12,9 @@
     box-sizing: border-box;
     font-family: "Arial", sans-serif;
 }
-
+p { 
+    color: black;
+}
 body {
     background-color: #f4f4f4;
     color: #333;
@@ -65,6 +67,36 @@ nav {
 
 .nav-links a:hover, .nav-links .active {
     color: #007bff;
+}
+/* ✅ Style du logo */
+.logo {
+    width: 50vw;  /* Le logo occupe 50% de la largeur de la fenêtre (viewport) */
+    max-width: 300px;  /* Limite la taille du logo pour éviter qu'il devienne trop grand */
+    height: auto;  /* Garde les proportions originales de l'image */
+}
+
+/* ✅ Responsive : Ajuste le logo pour les petits écrans */
+@media (max-width: 600px) {
+    .logo {
+        width: 70vw;  /* Augmente la taille du logo pour qu'il reste visible sur mobile */
+        max-width: 200px;  /* Réduit la limite maximale pour ne pas dépasser l'écran */
+    }
+}
+/* ✅ Style pour les liens d'équipe */
+.team-link {
+    text-decoration: none;  /* Supprime le soulignement du lien pour un look propre */
+    color: inherit;  /* Garde la couleur du texte inchangée */
+}
+
+/* ✅ Style des articles d'équipe */
+.team-link article {
+    cursor: pointer;  /* Change le curseur pour indiquer que c'est cliquable */
+    transition: transform 0.2s ease-in-out; /* Animation fluide au survol */
+}
+
+/* ✅ Effet au survol */
+.team-link article:hover {
+    transform: scale(1.05);  /* Zoom léger pour améliorer l'interaction */
 }
 
 /**************************************************************************
@@ -134,7 +166,7 @@ section {
  **************************************************************************/
 
 footer {
-    background: #333;
+    background: #ffffff;
     color: white;
     text-align: center;
     padding: 20px;
