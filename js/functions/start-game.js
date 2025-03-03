@@ -1,8 +1,8 @@
 /** -------------------------------------------------------------------------
 - file start-game.js
-- @description Gestion de l'initialisation et des événements du jeu
-- @author TrackJnr
-- @version 1.0
+- description Gestion de l'initialisation et des événements du jeu
+- author TrackJnr
+- version 1.0
 ----------------------------------------------------------------------------*/
 
 // ✅ Importation des fonctions nécessaires
